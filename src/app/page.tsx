@@ -7,8 +7,11 @@ import ServicesSection from "@/components/home/ServicesSection";
 import PortfolioSection from "@/components/home/PortfolioSection";
 import ProcessSection from "@/components/home/ProcessSection";
 import ContactSection from "@/components/home/ContactSection";
+import { getCoverImagesBySlug } from "@/lib/projects.server";
 
 export default function Home() {
+  const coverBySlug = getCoverImagesBySlug();
+
   return (
     <>
       <Navbar />
@@ -16,7 +19,7 @@ export default function Home() {
         <HeroSection />
         <AboutSection />
         <ServicesSection />
-        <PortfolioSection />
+        <PortfolioSection coverBySlug={coverBySlug} />
         <ProcessSection />
         <ContactSection />
       </main>

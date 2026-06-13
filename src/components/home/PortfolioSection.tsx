@@ -3,16 +3,10 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 import { useTheme } from "@/context/ThemeContext";
-
-interface Project {
-  image: string;
-  title: string;
-  category: string;
-  year: string;
-  location?: string;
-}
+import { getProjects, type ProjectView } from "@/lib/projects";
 
 /* ── Single Project Item ── */
 function ProjectItem({
@@ -23,7 +17,7 @@ function ProjectItem({
   delay = 0,
   large = false,
 }: {
-  project: Project;
+  project: ProjectView;
   index: number;
   isInView: boolean;
   aspectClass?: string;
@@ -39,17 +33,28 @@ function ProjectItem({
       initial={{ opacity: 0, y: 56 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 1.1, delay, ease: [0.22, 1, 0.36, 1] }}
-      className="group cursor-pointer"
     >
-      {/* Image — sharp, no radius */}
+      <Link href={`/projects/${project.slug}`} className="group block">
       <div className={`relative ${aspectClass} overflow-hidden bg-card`}>
+        {project.hasCoverImage ? (
         <Image
-          src={project.image}
+          src={project.coverImage}
           alt={project.title}
           fill
           className="object-cover transition-transform duration-[1800ms] ease-[0.22,1,0.36,1] group-hover:scale-[1.035]"
           sizes="(max-width: 768px) 100vw, (max-width: 1280px) 60vw, 50vw"
         />
+        ) : (
+        <div
+          className="absolute inset-0"
+          style={{
+            background: isLight
+              ? "linear-gradient(135deg, #e8e4dc 0%, #d4cfc4 100%)"
+              : "linear-gradient(135deg, #1a1a1a 0%, #121212 100%)",
+          }}
+          aria-hidden
+        />
+        )}
         {/* Vignette — recedes on hover */}
         <div
           className="absolute inset-0 transition-opacity duration-700 group-hover:opacity-30"
@@ -80,77 +85,49 @@ function ProjectItem({
             >
               {project.title}
             </h3>
-            {project.location && (
+            {project.locationLabel && (
               <span className="text-[10px] tracking-[0.22em] text-text-dim/60 mt-1 block">
-                {project.location}
+                {project.locationLabel}
               </span>
             )}
           </div>
         </div>
         <div className="text-right shrink-0">
           <span className={`block text-[10px] tracking-[0.25em] uppercase font-semibold ${isLight ? "text-text-muted" : "text-text-dim"}`}>
-            {project.category}
+            {project.categoryLabel}
           </span>
+          {project.year && (
           <span className={`block text-[10px] tracking-[0.15em] mt-0.5 ${isLight ? "text-text-subtle" : "text-text-dim/45"}`}>
             {project.year}
           </span>
+          )}
         </div>
       </div>
+      </Link>
     </motion.article>
   );
 }
 
-export default function PortfolioSection() {
-  const { t } = useLanguage();
+export default function PortfolioSection({
+  coverBySlug,
+}: {
+  coverBySlug: Record<string, string>;
+}) {
+  const { t, lang } = useLanguage();
   const { theme, mounted } = useTheme();
   const isLight = mounted && theme === "light";
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-80px" });
 
-  const projects: Project[] = [
-    {
-      image: "/images/portfolio-auto.png",
-      title: t("BMW — Salone di Ginevra", "BMW — Geneva Motor Show"),
-      category: t("Automotive", "Automotive"),
-      year: "2024",
-      location: t("Ginevra, CH", "Geneva, CH"),
-    },
-    {
-      image: "/images/portfolio-fashion.png",
-      title: t("L'Oréal — Cosmoprof Bologna", "L'Oréal — Cosmoprof Bologna"),
-      category: t("Beauty & Wellness", "Beauty & Wellness"),
-      year: "2024",
-      location: t("Bologna, IT", "Bologna, IT"),
-    },
-    {
-      image: "/images/portfolio-tech.png",
-      title: t("Siemens — CES Las Vegas", "Siemens — CES Las Vegas"),
-      category: t("Tecnologia", "Technology"),
-      year: "2023",
-      location: t("Las Vegas, US", "Las Vegas, US"),
-    },
-    {
-      image: "/images/portfolio-showroom.png",
-      title: t("DE NORA — Hannover Messe", "DE NORA — Hannover Messe"),
-      category: t("Energia & Industria", "Energy & Industry"),
-      year: "2023",
-      location: t("Hannover, DE", "Hanover, DE"),
-    },
-    {
-      image: "/images/hero-exhibition.png",
-      title: t("Ferrero — Anuga Colonia", "Ferrero — Anuga Cologne"),
-      category: t("Food & Beverage", "Food & Beverage"),
-      year: "2022",
-      location: t("Colonia, DE", "Cologne, DE"),
-    },
-    {
-      image: "/images/hero-interior.png",
-      title: t("Pirelli — Salone di Parigi", "Pirelli — Paris Motor Show"),
-      category: t("Automotive", "Automotive"),
-      year: "2022",
-      location: t("Parigi, FR", "Paris, FR"),
-    },
-  ];
+  const projects = getProjects(lang).map((project) => {
+    const coverImage = coverBySlug[project.slug] ?? project.coverImage;
+
+    return {
+      ...project,
+      coverImage,
+      hasCoverImage: Boolean(coverImage),
+    };
+  });
 
   return (
     <section
