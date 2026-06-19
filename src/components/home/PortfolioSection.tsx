@@ -41,6 +41,8 @@ function ProjectItem({
           src={project.coverImage}
           alt={project.title}
           fill
+          draggable={false}
+          onDragStart={(event) => event.preventDefault()}
           className="object-cover transition-transform duration-[1800ms] ease-[0.22,1,0.36,1] group-hover:scale-[1.035]"
           sizes="(max-width: 768px) 100vw, (max-width: 1280px) 60vw, 50vw"
         />
@@ -249,8 +251,8 @@ export default function PortfolioSection({
         className="max-w-7xl mx-auto px-8 lg:px-14 mt-24 lg:mt-32 flex items-center gap-8"
       >
         <div className="flex-1 gradient-line" />
-        <a
-          href="#contact"
+        <Link
+          href="/#contact"
           className={`group inline-flex items-center gap-6 shrink-0 transition-colors duration-500 ${
             isLight ? "text-text hover:text-cyan" : "text-text hover:text-cyan"
           }`}
@@ -267,7 +269,7 @@ export default function PortfolioSection({
           >
             <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />
           </svg>
-        </a>
+        </Link>
       </motion.div>
     </section>
   );

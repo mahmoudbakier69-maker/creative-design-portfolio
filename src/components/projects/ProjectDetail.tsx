@@ -63,6 +63,8 @@ export default function ProjectDetail({
               alt={project.title}
               fill
               priority
+              draggable={false}
+              onDragStart={(event) => event.preventDefault()}
               className={styles.heroImage}
               sizes="100vw"
             />

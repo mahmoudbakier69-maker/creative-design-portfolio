@@ -1,25 +1,38 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useLanguage } from "@/context/LanguageContext";
 import { useTheme } from "@/context/ThemeContext";
 
 export default function Navbar() {
   const { lang, setLang, t } = useLanguage();
   const { theme, toggleTheme, mounted } = useTheme();
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   // Guard: stabilise theme-driven rendering until after hydration
   const resolvedTheme = mounted ? theme : "dark";
 
+  const handleLogoClick = useCallback(
+    (event: React.MouseEvent<HTMLAnchorElement>) => {
+      if (pathname === "/") {
+        event.preventDefault();
+        document.getElementById("hero")?.scrollIntoView({ behavior: "smooth" });
+      }
+    },
+    [pathname]
+  );
+
   const navLinks = [
-    { label: t("Home", "Home"), href: "#hero" },
-    { label: t("Chi Siamo", "About"), href: "#about" },
-    { label: t("Servizi", "Services"), href: "#services" },
-    { label: t("Portfolio", "Portfolio"), href: "#portfolio" },
-    { label: t("Contatti", "Contact"), href: "#contact" },
+    { label: t("Home", "Home"), href: "/#hero" },
+    { label: t("Chi Siamo", "About"), href: "/#about" },
+    { label: t("Servizi", "Services"), href: "/#services" },
+    { label: t("Portfolio", "Portfolio"), href: "/#portfolio" },
+    { label: t("Contatti", "Contact"), href: "/#contact" },
   ];
 
   useEffect(() => {
@@ -49,10 +62,11 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-8 lg:px-14 flex items-center justify-between">
 
           {/* Logo — fades in on scroll */}
-          <a
-            href="#hero"
+          <Link
+            href="/"
+            onClick={handleLogoClick}
             className={`flex items-center group transition-all duration-700 ease-[0.22,1,0.36,1] ${
-              scrolled ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"
+              scrolled ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
             }`}
           >
             <div className="relative h-14 w-14 flex items-center justify-center shrink-0">
@@ -65,7 +79,7 @@ export default function Navbar() {
                 priority
               />
             </div>
-          </a>
+          </Link>
 
           {/* Desktop Nav */}
           <div
@@ -74,13 +88,13 @@ export default function Navbar() {
             }`}
           >
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.href}
                 href={link.href}
                 className="text-[11px] font-semibold text-nav-text-dim hover:text-cyan transition-colors uppercase tracking-[0.14em] nav-link"
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
           </div>
 
@@ -195,12 +209,12 @@ export default function Navbar() {
             </button>
 
             {/* CTA Button — Restrained, no neon glow */}
-            <a
-              href="#contact"
+            <Link
+              href="/#contact"
               className="ml-0.5 inline-flex items-center justify-center px-5 py-2 rounded-full border border-cyan/40 text-cyan font-semibold text-[10px] tracking-[0.18em] uppercase hover:bg-cyan hover:text-graphite transition-all duration-400"
             >
               {t("Preventivo", "Get Quote")}
-            </a>
+            </Link>
           </div>
 
           {/* Mobile Hamburger */}
@@ -243,29 +257,35 @@ export default function Navbar() {
 
             <nav className="flex flex-col items-center gap-10 relative z-10">
               {navLinks.map((link, i) => (
-                <motion.a
+                <motion.div
                   key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileOpen(false)}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ delay: i * 0.05, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                  className="text-2xl font-bold tracking-wider text-nav-text hover:text-cyan transition-colors"
                 >
-                  {link.label}
-                </motion.a>
+                  <Link
+                    href={link.href}
+                    onClick={() => setMobileOpen(false)}
+                    className="text-2xl font-bold tracking-wider text-nav-text hover:text-cyan transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </motion.div>
               ))}
-              <motion.a
-                href="#contact"
-                onClick={() => setMobileOpen(false)}
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3, duration: 0.5 }}
-                className="mt-6 px-10 py-3 border border-cyan/40 text-cyan text-sm font-bold uppercase tracking-[0.2em] hover:bg-cyan hover:text-graphite transition-all duration-400"
               >
-                {t("Contattaci", "Contact Us")}
-              </motion.a>
+                <Link
+                  href="/#contact"
+                  onClick={() => setMobileOpen(false)}
+                  className="mt-6 inline-block px-10 py-3 border border-cyan/40 text-cyan text-sm font-bold uppercase tracking-[0.2em] hover:bg-cyan hover:text-graphite transition-all duration-400"
+                >
+                  {t("Contattaci", "Contact Us")}
+                </Link>
+              </motion.div>
             </nav>
           </motion.div>
         )}

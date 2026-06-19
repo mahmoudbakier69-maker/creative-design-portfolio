@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useTheme } from "@/context/ThemeContext";
@@ -16,11 +17,11 @@ export default function Footer() {
   }, []);
 
   const quickLinks = [
-    { label: t("Home", "Home"), href: "#hero" },
-    { label: t("Chi Siamo", "About"), href: "#about" },
-    { label: t("Servizi", "Services"), href: "#services" },
-    { label: t("Portfolio", "Portfolio"), href: "#portfolio" },
-    { label: t("Contatti", "Contact"), href: "#contact" },
+    { label: t("Home", "Home"), href: "/#hero" },
+    { label: t("Chi Siamo", "About"), href: "/#about" },
+    { label: t("Servizi", "Services"), href: "/#services" },
+    { label: t("Portfolio", "Portfolio"), href: "/#portfolio" },
+    { label: t("Contatti", "Contact"), href: "/#contact" },
   ];
 
   return (
@@ -59,9 +60,9 @@ export default function Footer() {
             <ul className="site-footer__nav-list">
               {quickLinks.map((link) => (
                 <li key={link.href}>
-                  <a href={link.href} className="site-footer__link">
+                  <Link href={link.href} className="site-footer__link">
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

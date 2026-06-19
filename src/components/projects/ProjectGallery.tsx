@@ -50,6 +50,8 @@ function GalleryThumbnail({ item, index, total, projectTitle, onOpen }: GalleryT
               src={item.src}
               alt={item.altLabel}
               fill
+              draggable={false}
+              onDragStart={(event) => event.preventDefault()}
               className={styles.galleryImage}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 640px"
               loading="lazy"
@@ -178,6 +180,8 @@ export default function ProjectGallery({ items, projectTitle }: ProjectGalleryPr
                   src={activeItem.src}
                   alt={activeItem.altLabel}
                   fill
+                  draggable={false}
+                  onDragStart={(event) => event.preventDefault()}
                   className={styles.lightboxImage}
                   sizes="100vw"
                   loading="eager"

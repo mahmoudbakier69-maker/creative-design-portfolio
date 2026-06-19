@@ -34,6 +34,8 @@ function LazyVideoPlayer({ video }: LazyVideoPlayerProps) {
               src={video.poster}
               alt=""
               fill
+              draggable={false}
+              onDragStart={(event) => event.preventDefault()}
               className={styles.videoPoster}
               sizes="(max-width: 768px) 100vw, 80rem"
               loading="lazy"

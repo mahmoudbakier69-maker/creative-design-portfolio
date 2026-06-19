@@ -2,7 +2,6 @@
 
 import { motion, useInView } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
-import Image from "next/image";
 import { useLanguage } from "@/context/LanguageContext";
 import { useTheme } from "@/context/ThemeContext";
 
@@ -66,22 +65,38 @@ export default function AboutSection() {
       <div className="gradient-line" />
 
       <div className="max-w-7xl mx-auto px-8 lg:px-14 pt-24 lg:pt-32">
-        <div className="grid lg:grid-cols-2 gap-20 lg:gap-32 items-start">
+        <div className="flex flex-col items-center text-center">
 
-          {/* ── Left — Image ── */}
+          {/* 1 — About label */}
+          <motion.div
+            initial={{ opacity: 0, y: 28 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+            className="flex items-center justify-center gap-4 mb-10 lg:mb-14"
+          >
+            <div className="editorial-eyebrow-rule" />
+            <span className="editorial-eyebrow">
+              {t("Chi Siamo", "About Us")}
+            </span>
+          </motion.div>
+
+          {/* 2 — Cinematic video */}
           <motion.div
             initial={{ opacity: 0, x: -40 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-            className="relative"
+            className="relative w-full mb-16 lg:mb-28"
           >
-            <div className="relative aspect-[4/5] overflow-hidden">
-              <Image
-                src="/images/hero-interior.png"
-                alt={t("Studio di progettazione Creative Design", "Creative Design studio")}
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 50vw"
+            <div className="relative aspect-video w-full overflow-hidden">
+              <video
+                className="absolute inset-0 h-full w-full object-cover object-center"
+                src="/videos/about-process.mp4"
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="auto"
+                aria-label={t("Studio di progettazione Creative Design", "Creative Design studio")}
               />
               {/* Minimal vignette */}
               <div
@@ -92,35 +107,11 @@ export default function AboutSection() {
                     : "linear-gradient(to top, rgba(10,10,10,0.35) 0%, transparent 42%)",
                 }}
               />
-
-              {/* Year stamp — integrated within image frame */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={isInView ? { opacity: 1 } : {}}
-                transition={{ duration: 1, delay: 0.7 }}
-                className="absolute inset-0 pointer-events-none overflow-hidden"
-                aria-hidden
-              >
-                <span
-                  className="absolute bottom-3 left-4 lg:bottom-5 lg:left-5 select-none leading-none"
-                  style={{
-                    fontFamily: "var(--font-cormorant), Georgia, serif",
-                    fontSize: "clamp(48px, 6.5vw, 76px)",
-                    fontWeight: 300,
-                    letterSpacing: "-0.03em",
-                    color: isLight
-                      ? "rgba(20, 84, 84, 0.16)"
-                      : "rgba(232, 230, 225, 0.06)",
-                  }}
-                >
-                  1994
-                </span>
-              </motion.div>
             </div>
 
             {/* Decorative accent */}
             <div
-              className="absolute -left-3 top-1/4 w-px h-24"
+              className="absolute -left-3 top-[18%] w-px h-24"
               style={{
                 background: isLight
                   ? "linear-gradient(to bottom, rgba(20,84,84,0.55), transparent)"
@@ -129,21 +120,13 @@ export default function AboutSection() {
             />
           </motion.div>
 
-          {/* ── Right — Content ── */}
+          {/* 3–5 — Heading, description, tags */}
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
-            className="lg:pt-10"
+            className="w-full max-w-3xl mx-auto"
           >
-            {/* Label */}
-            <div className="flex items-center gap-4 mb-8">
-              <div className="editorial-eyebrow-rule" />
-              <span className="editorial-eyebrow">
-                {t("Chi Siamo", "About Us")}
-              </span>
-            </div>
-
             {/* Headline — Cormorant Garamond */}
             <h2
               className={`mb-10 leading-[0.90] ${isLight ? "text-text" : ""}`}
@@ -177,7 +160,7 @@ export default function AboutSection() {
             </p>
 
             {/* Tags */}
-            <div className="flex flex-wrap gap-2 mb-16">
+            <div className="flex flex-wrap justify-center gap-2 mb-16 lg:mb-20">
               {tags.map((tag) => (
                 <span
                   key={tag}
@@ -191,46 +174,46 @@ export default function AboutSection() {
                 </span>
               ))}
             </div>
-
-            {/* Stats — Cormorant numbers */}
-            <div
-              className={`grid grid-cols-2 sm:grid-cols-4 gap-0 border-t pt-10 ${
-                isLight ? "border-[rgba(12,10,7,0.12)]" : "border-[rgba(255,255,255,0.05)]"
-              }`}
-            >
-              {stats.map((stat, i) => (
-                <motion.div
-                  key={stat.label}
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={isInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: 0.7, delay: 0.5 + i * 0.1 }}
-                  className={`pr-4 ${
-                    i !== 0
-                      ? isLight
-                        ? "border-l border-[rgba(12,10,7,0.10)] pl-4"
-                        : "border-l border-[rgba(255,255,255,0.05)] pl-4"
-                      : ""
-                  } ${i >= 2 ? "mt-8 sm:mt-0" : ""}`}
-                >
-                  <div
-                    className="mb-1 text-text"
-                    style={{
-                      fontFamily: "var(--font-cormorant), Georgia, serif",
-                      fontSize: "clamp(28px, 4vw, 44px)",
-                      fontWeight: 300,
-                      letterSpacing: "-0.02em",
-                      lineHeight: 1,
-                    }}
-                  >
-                    <AnimatedCounter target={stat.value} suffix={stat.suffix} />
-                  </div>
-                  <div className={isLight ? "editorial-stat-label leading-snug" : "text-[10px] tracking-[0.20em] uppercase font-medium leading-snug text-text-dim"}>
-                    {stat.label}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
           </motion.div>
+
+          {/* 6 — Statistics row */}
+          <div
+            className={`w-full max-w-4xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-0 border-t pt-10 lg:pt-14 ${
+              isLight ? "border-[rgba(12,10,7,0.12)]" : "border-[rgba(255,255,255,0.05)]"
+            }`}
+          >
+            {stats.map((stat, i) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, y: 14 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.7, delay: 0.5 + i * 0.1 }}
+                className={`pr-4 ${
+                  i !== 0
+                    ? isLight
+                      ? "border-l border-[rgba(12,10,7,0.10)] pl-4"
+                      : "border-l border-[rgba(255,255,255,0.05)] pl-4"
+                    : ""
+                } ${i >= 2 ? "mt-8 sm:mt-0" : ""}`}
+              >
+                <div
+                  className="mb-1 text-text"
+                  style={{
+                    fontFamily: "var(--font-cormorant), Georgia, serif",
+                    fontSize: "clamp(28px, 4vw, 44px)",
+                    fontWeight: 300,
+                    letterSpacing: "-0.02em",
+                    lineHeight: 1,
+                  }}
+                >
+                  <AnimatedCounter target={stat.value} suffix={stat.suffix} />
+                </div>
+                <div className={isLight ? "editorial-stat-label leading-snug" : "text-[10px] tracking-[0.20em] uppercase font-medium leading-snug text-text-dim"}>
+                  {stat.label}
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

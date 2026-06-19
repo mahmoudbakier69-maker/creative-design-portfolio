@@ -2,6 +2,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import SocialDock from "@/components/SocialDock";
 import HeroSection from "@/components/home/HeroSection";
+import HeroVideoPreload from "@/components/home/HeroVideoPreload";
 import AboutSection from "@/components/home/AboutSection";
 import ServicesSection from "@/components/home/ServicesSection";
 import PortfolioSection from "@/components/home/PortfolioSection";
@@ -14,6 +15,7 @@ export default function Home() {
 
   return (
     <>
+      <HeroVideoPreload />
       <Navbar />
       <main>
         <HeroSection />
