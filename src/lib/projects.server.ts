@@ -1,5 +1,4 @@
 import {
-  discoverCoverFilename,
   discoverCoverImage,
   discoverGalleryImages,
   discoverVideoPoster,
@@ -12,7 +11,7 @@ import type {
   ResolvedGalleryImage,
   ResolvedVideo,
 } from "./projects";
-import { localize, PROJECTS } from "./projects";
+import { localize, PROJECTS, resolveGalleryAltLabel } from "./projects";
 
 export function resolveProjectCoverImage(project: Project): string {
   if (project.autoDiscoverCover !== false) {
@@ -57,7 +56,7 @@ export function resolveProjectGalleryItems(
 ): ResolvedGalleryImage[] {
   return getProjectGalleryImages(project).map((src, index) => ({
     src,
-    altLabel: `${project.title} — ${lang === "it" ? "Immagine" : "Image"} ${index + 1}`,
+    altLabel: resolveGalleryAltLabel(project, index, lang),
   }));
 }
 
@@ -87,21 +86,5 @@ export function resolveProjectVideoItems(
     titleLabel: video.title
       ? localize(video.title, lang)
       : `${project.title} — ${lang === "it" ? "Video" : "Video"} ${index + 1}`,
-  }));
-}
-
-export interface ProjectCoverReport {
-  title: string;
-  mediaKey: string;
-  detectedCoverFile: string | null;
-  resolvedPath: string | null;
-}
-
-export function getProjectCoverReport(): ProjectCoverReport[] {
-  return PROJECTS.map((project) => ({
-    title: project.title,
-    mediaKey: project.mediaKey,
-    detectedCoverFile: discoverCoverFilename(project.mediaKey),
-    resolvedPath: resolveProjectCoverImage(project) || null,
   }));
 }

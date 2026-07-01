@@ -1,65 +1,65 @@
 "use client";
 
-import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import { useTheme } from "@/context/ThemeContext";
+import { useSectionReveal } from "@/lib/motion";
 
 export default function ServicesSection() {
   const { t } = useLanguage();
   const { theme, mounted } = useTheme();
   const isLight = mounted && theme === "light";
-  const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
+  const { ref: sectionRef, show, initial, animate, transition, staggerDelay } =
+    useSectionReveal();
 
   const services = [
     {
       title: t("Progettazione Stand", "Stand Design"),
       description: t(
-        "Concept architettonici pensati per fiere internazionali e trade show. Ogni stand nasce da un'identità spaziale forte, che comunica il brand attraverso geometrie, luce e materiali.",
-        "Architectural concepts designed for international trade shows. Every stand is built from a strong spatial identity that communicates the brand through geometry, light and materials."
+        "Progettazione di stand per fiere nazionali e internazionali. Layout, volumi, materiali e grafica coordinati, con render 3D e documentazione per l'organizzatore.",
+        "Stand design for national and international trade shows. Layout, structure, materials and graphics coordinated, with 3D renders and documentation for organisers."
       ),
-      tag: t("Concept · Trade Show · Brand", "Concept · Trade Show · Brand"),
+      tag: t("Layout · 3D · Fiere", "Layout · 3D · Trade Shows"),
     },
     {
       title: t("Costruzione Stand", "Stand Construction"),
       description: t(
-        "Realizzazione con materiali tecnici e finiture premium. La produzione interna garantisce controllo totale su qualità, tempi e puntualità in ogni appuntamento fieristico.",
-        "Construction with technical materials and premium finishes. In-house production guarantees total control over quality, timing and punctuality at every trade show."
+        "Realizzazione in carpenteria leggera e rivestimenti tecnici. Produzione interna, finiture curate e controllo qualità prima della spedizione in fiera.",
+        "Built in lightweight joinery and technical cladding. In-house production, finished surfaces and quality checks before shipping to the venue."
       ),
-      tag: t("Produzione Interna · Premium", "In-House · Premium"),
+      tag: t("Carpenteria · Finiture · Interno", "Joinery · Finishes · In-House"),
     },
     {
       title: t("Ambienti Corporate", "Corporate Environments"),
       description: t(
-        "Installazioni permanenti per uffici direzionali, flagship showroom e spazi di brand experience. Architettura d'interni che costruisce identità e trasmette la cultura aziendale.",
-        "Permanent installations for executive offices, flagship showrooms and brand experience spaces. Interior architecture that builds identity and communicates company culture."
+        "Showroom aziendali e spazi espositivi permanenti per presentare prodotti, campionature e collezioni durante tutto l'anno.",
+        "Corporate showrooms and permanent display spaces for presenting products, samples and collections year-round."
       ),
-      tag: t("Corporate · Showroom · Installazioni", "Corporate · Showroom · Installations"),
+      tag: t("Showroom · Corporate · Permanente", "Showroom · Corporate · Permanent"),
     },
     {
       title: t("Spazi Espositivi", "Exhibition Spaces"),
       description: t(
-        "Ambienti che trasformano la presentazione del prodotto in un'esperienza immersiva. Illuminazione architettonica, materiali tecnici e percorsi spaziali studiati per ogni progetto.",
-        "Environments that transform product presentation into an immersive experience. Architectural lighting, technical materials and spatial pathways designed for each project."
+        "Allestimenti per esporre prodotti con illuminazione dedicata, pedane, pannelli e arredi su misura per ogni settore.",
+        "Display setups with dedicated lighting, platforms, panels and custom furniture suited to each product category."
       ),
-      tag: t("Illuminazione · Materiali · Spazio", "Lighting · Materials · Space"),
+      tag: t("Illuminazione · Pedane · Prodotti", "Lighting · Platforms · Products"),
     },
     {
-      title: t("Allestimenti Evento", "Event Architecture"),
+      title: t("Allestimenti Evento", "Event Installations"),
       description: t(
-        "Strutture temporanee per lanci di prodotto, eventi corporate e conferenze internazionali. Installazioni scenografiche ad alto impatto visivo con montaggio e smontaggio integrati.",
-        "Temporary structures for product launches, corporate events and international conferences. High visual-impact scenographic installations with integrated assembly and dismantling."
+        "Strutture per presentazioni, conferenze e lanci prodotto. Montaggio, gestione in sito e smontaggio a fine evento.",
+        "Structures for presentations, conferences and product launches. On-site setup, support during the event and dismantling when finished."
       ),
-      tag: t("Corporate · Launch · Conference", "Corporate · Launch · Conference"),
+      tag: t("Eventi · Montaggio · Temporaneo", "Events · Setup · Temporary"),
     },
     {
       title: t("Soluzioni Chiavi in Mano", "Turnkey Solutions"),
       description: t(
-        "Un unico interlocutore dal concept alla consegna. Gestione completa di progettazione, produzione, logistica, trasporto, montaggio e smontaggio in ogni sede fieristica europea.",
-        "A single point of contact from concept to delivery. Complete management of design, production, logistics, transport, assembly and dismantling at every European trade show venue."
+        "Progetto, produzione, logistica, trasporto e montaggio con un unico referente, nelle principali sedi fieristiche europee.",
+        "Design, production, logistics, transport and assembly with a single point of contact at major European trade show venues."
       ),
-      tag: t("Europa · Logistica · Full Service", "Europe · Logistics · Full Service"),
+      tag: t("Logistica · Montaggio · Europa", "Logistics · Assembly · Europe"),
     },
   ];
 
@@ -73,9 +73,9 @@ export default function ServicesSection() {
 
         {/* ── Section Header ── */}
         <motion.div
-          initial={{ opacity: 0, y: 28 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+          initial={initial}
+          animate={animate}
+          transition={transition()}
           className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-10 mb-24 lg:mb-32"
         >
           <div>
@@ -96,8 +96,8 @@ export default function ServicesSection() {
 
           <p className={`leading-relaxed lg:text-right lg:pb-2 ${isLight ? "editorial-lead max-w-sm" : "text-sm max-w-xs text-text-dim"}`}>
             {t(
-              "Qualità e cura del dettaglio dalla visione alla consegna. Made in Italy, distribuito in Europa.",
-              "Quality and attention to detail from vision to delivery. Made in Italy, delivered across Europe."
+              "Progettazione e costruzione stand con produzione interna, dalla prima bozza al montaggio in fiera.",
+              "Stand design and build with in-house production, from first draft to on-site assembly."
             )}
           </p>
         </motion.div>
@@ -111,10 +111,10 @@ export default function ServicesSection() {
           {services.map((service, i) => (
             <motion.div
               key={service.title}
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.8, delay: 0.07 * i, ease: [0.22, 1, 0.36, 1] }}
-              className={`group flex items-start gap-8 lg:gap-20 py-10 lg:py-12 -mx-4 px-4 transition-colors duration-500 cursor-default ${
+              initial={initial}
+              animate={show ? animate : { opacity: 0, y: 24 }}
+              transition={transition(staggerDelay(i))}
+              className={`motion-card-lift group flex items-start gap-8 lg:gap-20 py-10 lg:py-12 -mx-4 px-4 transition-colors duration-500 cursor-default ${
                 isLight
                   ? "services-editorial-row"
                   : "hover:bg-[rgba(126,200,200,0.025)]"

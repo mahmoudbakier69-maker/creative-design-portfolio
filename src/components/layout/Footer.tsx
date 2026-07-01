@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useTheme } from "@/context/ThemeContext";
 
@@ -10,11 +9,7 @@ export default function Footer() {
   const { t } = useLanguage();
   const { theme, mounted } = useTheme();
   const isLight = mounted && theme === "light";
-  const [currentYear, setCurrentYear] = useState<number | null>(null);
-
-  useEffect(() => {
-    setCurrentYear(new Date().getFullYear());
-  }, []);
+  const currentYear = new Date().getFullYear();
 
   const quickLinks = [
     { label: t("Home", "Home"), href: "/#hero" },
@@ -71,7 +66,7 @@ export default function Footer() {
 
         <div className="site-footer__bar">
           <p className="site-footer__copyright">
-            © {currentYear ?? ""} Creative Design S.r.l. —{" "}
+            © {currentYear} Creative Design S.r.l. —{" "}
             {t("Tutti i diritti riservati", "All rights reserved")}
           </p>
         </div>

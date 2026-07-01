@@ -17,11 +17,11 @@ Structure per project (mediaKey = folder name):
 
 Configured folders:
   - sudeep    → Sudeep Nutrition
-  - nvidia    → NVIDIA
-  - egyptair  → Egyptair
+  - mindware  → Mindware
+  - egypt-tourism → Egypt Tourism Pavilion
   - amana     → Amana Foods
   - illulian  → Illulian
-  - alpa70    → ALPA70
+  - alpa70    → ALPA Salotti
 
 After uploading files, gallery images are auto-discovered at build time
 when autoDiscoverGallery is enabled in src/lib/projects.ts.

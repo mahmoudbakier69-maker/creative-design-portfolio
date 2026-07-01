@@ -3,8 +3,8 @@
 import {
   createContext,
   useContext,
-  useState,
-  useEffect,
+  useCallback,
+  useSyncExternalStore,
   ReactNode,
 } from "react";
 
@@ -12,46 +12,81 @@ type Theme = "dark" | "light";
 
 const STORAGE_KEY = "cd-theme";
 
+const listeners = new Set<() => void>();
+
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+  };
+}
+
+function emitChange() {
+  listeners.forEach((listener) => listener());
+}
+
+function getThemeSnapshot(): Theme {
+  if (typeof window === "undefined") return "dark";
+  const saved = window.localStorage.getItem(STORAGE_KEY) as Theme | null;
+  return saved === "light" ? "light" : "dark";
+}
+
+function getServerThemeSnapshot(): Theme {
+  return "dark";
+}
+
+function getMountedSnapshot(): boolean {
+  return typeof window !== "undefined";
+}
+
+function getServerMountedSnapshot(): boolean {
+  return false;
+}
+
+function applyThemeClass(theme: Theme) {
+  if (typeof document === "undefined") return;
+  if (theme === "light") {
+    document.documentElement.classList.add("light-theme");
+  } else {
+    document.documentElement.classList.remove("light-theme");
+  }
+}
+
+function persistTheme(theme: Theme) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(STORAGE_KEY, theme);
+  applyThemeClass(theme);
+  emitChange();
+}
+
+if (typeof window !== "undefined") {
+  applyThemeClass(getThemeSnapshot());
+}
+
 interface ThemeContextType {
   theme: Theme;
   toggleTheme: () => void;
-  /** False on the server and during the first client paint — use to
-   *  avoid theme-driven branches that would cause hydration mismatches. */
+  /** False on the server — use to avoid theme-driven branches that cause hydration mismatches. */
   mounted: boolean;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  // Always start with "dark" on both server *and* first client render so
-  // the hydrated HTML matches the SSR HTML exactly.
-  const [theme, setTheme] = useState<Theme>("dark");
-  const [mounted, setMounted] = useState(false);
+  const theme = useSyncExternalStore(
+    subscribe,
+    getThemeSnapshot,
+    getServerThemeSnapshot
+  );
+  const mounted = useSyncExternalStore(
+    subscribe,
+    getMountedSnapshot,
+    getServerMountedSnapshot
+  );
 
-  // After first paint: read the persisted preference and apply it.
-  // This intentionally runs only on the client, after hydration is done.
-  useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY) as Theme | null;
-    const resolved: Theme = saved === "light" ? "light" : "dark";
-    setTheme(resolved);
-    setMounted(true);
-  }, []);
-
-  // Sync class on <html> and persist whenever theme changes.
-  // Also runs only on the client (inside useEffect).
-  useEffect(() => {
-    if (!mounted) return;
-    if (theme === "light") {
-      document.documentElement.classList.add("light-theme");
-    } else {
-      document.documentElement.classList.remove("light-theme");
-    }
-    localStorage.setItem(STORAGE_KEY, theme);
-  }, [theme, mounted]);
-
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
-  };
+  const toggleTheme = useCallback(() => {
+    persistTheme(theme === "dark" ? "light" : "dark");
+  }, [theme]);
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme, mounted }}>

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import ProjectDetail from "@/components/projects/ProjectDetail";
-import { buildProjectMetadata } from "@/lib/project-metadata";
+import StructuredData from "@/components/seo/StructuredData";
+import { buildProjectJsonLd, buildProjectMetadata } from "@/lib/project-metadata";
 import {
   getEnrichedProjectRaw,
   resolveProjectGalleryItems,
@@ -26,7 +27,7 @@ export async function generateMetadata({ params }: ProjectPageProps) {
     };
   }
 
-  return buildProjectMetadata(project);
+  return buildProjectMetadata(project, slug);
 }
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
@@ -41,11 +42,14 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   const videoItems = resolveProjectVideoItems(project, "en");
 
   return (
-    <ProjectDetail
-      slug={slug}
-      coverImage={project.coverImage}
-      galleryItems={galleryItems}
-      videoItems={videoItems}
-    />
+    <>
+      <StructuredData data={buildProjectJsonLd(project, slug)} />
+      <ProjectDetail
+        slug={slug}
+        coverImage={project.coverImage}
+        galleryItems={galleryItems}
+        videoItems={videoItems}
+      />
+    </>
   );
 }

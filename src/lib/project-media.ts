@@ -18,7 +18,7 @@
  *
  * After adding files, cover, gallery, and video paths are auto-discovered on the server.
  *
- * Existing media folders: sudeep, nvidia, egyptair, amana, illulian, alpa70 (see public/projects/).
+ * Existing media folders: sudeep, mindware, egypt-tourism, amana, illulian, alpa70 (see public/projects/).
  */
 
 /** Base URL path for a project's media folder (served from public/) */

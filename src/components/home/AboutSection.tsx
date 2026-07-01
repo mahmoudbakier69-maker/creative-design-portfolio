@@ -1,17 +1,25 @@
 "use client";
 
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useReducedMotion } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useTheme } from "@/context/ThemeContext";
+import { useSectionReveal } from "@/lib/motion";
 
 function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const reduced = useReducedMotion();
   const [count, setCount] = useState(0);
 
   useEffect(() => {
+    if (reduced) {
+      const frame = requestAnimationFrame(() => setCount(target));
+      return () => cancelAnimationFrame(frame);
+    }
+
     if (!isInView) return;
+
     let start = 0;
     const duration = 2200;
     const step = target / (duration / 16);
@@ -25,7 +33,7 @@ function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: str
       }
     }, 16);
     return () => clearInterval(timer);
-  }, [isInView, target]);
+  }, [isInView, target, reduced]);
 
   return (
     <span ref={ref} className="tabular-nums">
@@ -39,8 +47,8 @@ export default function AboutSection() {
   const { t } = useLanguage();
   const { theme, mounted } = useTheme();
   const isLight = mounted && theme === "light";
-  const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, { once: true, margin: "-150px" });
+  const { ref: sectionRef, show, initial, animate, transition, staggerDelay } =
+    useSectionReveal("-150px");
 
   const stats = [
     { value: 30, suffix: "+", label: t("Anni di Esperienza", "Years of Experience") },
@@ -60,18 +68,18 @@ export default function AboutSection() {
     <section
       id="about"
       ref={sectionRef}
-      className="relative section-padding overflow-hidden"
+      className="relative section-padding overflow-hidden max-md:!pt-14"
     >
       <div className="gradient-line" />
 
-      <div className="max-w-7xl mx-auto px-8 lg:px-14 pt-24 lg:pt-32">
+      <div className="max-w-7xl mx-auto px-8 lg:px-14 pt-8 md:pt-24 lg:pt-32">
         <div className="flex flex-col items-center text-center">
 
           {/* 1 — About label */}
           <motion.div
-            initial={{ opacity: 0, y: 28 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+            initial={initial}
+            animate={animate}
+            transition={transition()}
             className="flex items-center justify-center gap-4 mb-10 lg:mb-14"
           >
             <div className="editorial-eyebrow-rule" />
@@ -82,10 +90,10 @@ export default function AboutSection() {
 
           {/* 2 — Cinematic video */}
           <motion.div
-            initial={{ opacity: 0, x: -40 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-            className="relative w-full mb-16 lg:mb-28"
+            initial={initial}
+            animate={show ? animate : { opacity: 0, y: 24 }}
+            transition={transition(0.08)}
+            className="relative w-full mb-16 lg:mb-28 overflow-hidden md:overflow-visible motion-card-lift"
           >
             <div className="relative aspect-video w-full overflow-hidden">
               <video
@@ -111,7 +119,7 @@ export default function AboutSection() {
 
             {/* Decorative accent */}
             <div
-              className="absolute -left-3 top-[18%] w-px h-24"
+              className="absolute left-0 top-[18%] w-px h-24 md:-left-3"
               style={{
                 background: isLight
                   ? "linear-gradient(to bottom, rgba(20,84,84,0.55), transparent)"
@@ -122,14 +130,14 @@ export default function AboutSection() {
 
           {/* 3–5 — Heading, description, tags */}
           <motion.div
-            initial={{ opacity: 0, x: 40 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
-            className="w-full max-w-3xl mx-auto"
+            initial={initial}
+            animate={show ? animate : { opacity: 0, y: 24 }}
+            transition={transition(0.16)}
+            className="w-full min-w-0 max-w-3xl mx-auto"
           >
             {/* Headline — Cormorant Garamond */}
             <h2
-              className={`mb-10 leading-[0.90] ${isLight ? "text-text" : ""}`}
+              className={`mb-10 leading-[0.90] break-words ${isLight ? "text-text" : ""}`}
               style={{
                 fontFamily: "var(--font-cormorant), 'Cormorant Garamond', Georgia, serif",
                 fontSize: "clamp(42px, 6vw, 76px)",
@@ -185,9 +193,9 @@ export default function AboutSection() {
             {stats.map((stat, i) => (
               <motion.div
                 key={stat.label}
-                initial={{ opacity: 0, y: 14 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.7, delay: 0.5 + i * 0.1 }}
+                initial={initial}
+                animate={show ? animate : { opacity: 0, y: 24 }}
+                transition={transition(0.4 + staggerDelay(i))}
                 className={`pr-4 ${
                   i !== 0
                     ? isLight

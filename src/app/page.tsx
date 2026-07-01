@@ -20,8 +20,8 @@ export default function Home() {
       <main>
         <HeroSection />
         <AboutSection />
-        <ServicesSection />
         <PortfolioSection coverBySlug={coverBySlug} />
+        <ServicesSection />
         <ProcessSection />
         <ContactSection />
       </main>

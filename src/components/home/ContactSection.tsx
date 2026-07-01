@@ -1,24 +1,17 @@
 "use client";
 
-import { motion, useInView } from "framer-motion";
-import { useRef, useState } from "react";
+import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import { useTheme } from "@/context/ThemeContext";
 import { CONTACT } from "@/lib/contact";
+import { useSectionReveal } from "@/lib/motion";
+import ContactForm from "@/components/home/ContactForm";
 
 export default function ContactSection() {
   const { t } = useLanguage();
   const { theme, mounted } = useTheme();
   const isLight = mounted && theme === "light";
-  const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 3500);
-  };
+  const { ref: sectionRef, initial, animate, transition } = useSectionReveal();
 
   return (
     <section
@@ -31,9 +24,9 @@ export default function ContactSection() {
 
       <div className="max-w-7xl mx-auto px-8 lg:px-14 pt-20 lg:pt-28 relative z-[1]">
         <motion.div
-          initial={{ opacity: 0, y: 28 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+          initial={initial}
+          animate={animate}
+          transition={transition()}
           className="mb-14 lg:mb-16"
         >
           <div className="flex items-center gap-4 mb-6">
@@ -66,101 +59,19 @@ export default function ContactSection() {
 
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-14 xl:gap-16 items-start">
           <motion.div
-            initial={{ opacity: 0, y: 28 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 1, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
+            initial={initial}
+            animate={animate}
+            transition={transition(0.12)}
             className="lg:col-span-7 xl:col-span-8"
           >
-            <div className="contact-form__shell">
-              <form onSubmit={handleSubmit} className="contact-form">
-              <div className="grid sm:grid-cols-2 gap-x-8">
-                <div className="contact-form__field">
-                  <label htmlFor="contact-name" className="contact-form__label">
-                    {t("Nome *", "Name *")}
-                  </label>
-                  <input
-                    id="contact-name"
-                    type="text"
-                    required
-                    className="contact-form__input"
-                    placeholder={t("Il vostro nome", "Your name")}
-                  />
-                </div>
-                <div className="contact-form__field">
-                  <label htmlFor="contact-email" className="contact-form__label">
-                    {t("Email *", "Email *")}
-                  </label>
-                  <input
-                    id="contact-email"
-                    type="email"
-                    required
-                    className="contact-form__input"
-                    placeholder="email@company.com"
-                  />
-                </div>
-              </div>
-              <div className="grid sm:grid-cols-2 gap-x-8">
-                <div className="contact-form__field">
-                  <label htmlFor="contact-phone" className="contact-form__label">
-                    {t("Telefono", "Phone")}
-                  </label>
-                  <input
-                    id="contact-phone"
-                    type="tel"
-                    className="contact-form__input"
-                    placeholder={CONTACT.phoneDisplay}
-                  />
-                </div>
-                <div className="contact-form__field">
-                  <label htmlFor="contact-company" className="contact-form__label">
-                    {t("Azienda", "Company")}
-                  </label>
-                  <input
-                    id="contact-company"
-                    type="text"
-                    className="contact-form__input"
-                    placeholder={t("Nome azienda", "Company name")}
-                  />
-                </div>
-              </div>
-              <div className="contact-form__field">
-                <label htmlFor="contact-message" className="contact-form__label">
-                  {t("Messaggio *", "Message *")}
-                </label>
-                <textarea
-                  id="contact-message"
-                  required
-                  rows={5}
-                  className="contact-form__input contact-form__textarea"
-                  placeholder={t("Raccontateci il vostro progetto…", "Tell us about your project…")}
-                />
-              </div>
-
-              <button
-                type="submit"
-                className={`contact-submit ${submitted ? "contact-submit--sent" : ""}`}
-              >
-                <span className="contact-submit__frame" aria-hidden />
-                <span className="contact-submit__inner">
-                  <span className="contact-submit__text">
-                    {submitted
-                      ? t("Messaggio Inviato", "Message Sent")
-                      : t("Invia Messaggio", "Send Message")}
-                  </span>
-                  <span className="contact-submit__track" aria-hidden>
-                    <span className="contact-submit__fill" />
-                  </span>
-                </span>
-              </button>
-              </form>
-            </div>
+            <ContactForm />
           </motion.div>
 
           <motion.aside
-            initial={{ opacity: 0, y: 28 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 1, delay: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className="lg:col-span-5 xl:col-span-4"
+            initial={initial}
+            animate={animate}
+            transition={transition(0.22)}
+            className="lg:col-span-5 xl:col-span-4 motion-card-lift"
           >
             <div className="contact-aside">
               <div className="contact-aside__hairline" aria-hidden />

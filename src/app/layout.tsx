@@ -3,6 +3,9 @@ import { Space_Grotesk, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { ThemeProvider } from "@/context/ThemeContext";
+import StructuredData from "@/components/seo/StructuredData";
+import { buildOrganizationJsonLd } from "@/lib/project-metadata";
+import { defaultSiteDescription, siteMetadataBase, siteName, siteUrl } from "@/lib/site";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -19,9 +22,12 @@ const cormorantGaramond = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: "Creative Design | Exhibition Stand Design & Spatial Environments",
-  description:
-    "Italian exhibition stand design and spatial branding studio. Trade show environments, corporate installations and experiential architecture — turnkey across Europe.",
+  metadataBase: siteMetadataBase,
+  title: {
+    default: `${siteName} | Exhibition Stand Design & Spatial Environments`,
+    template: `%s | ${siteName}`,
+  },
+  description: defaultSiteDescription,
   keywords: [
     "exhibition stand design",
     "allestimenti fieristici",
@@ -32,11 +38,24 @@ export const metadata: Metadata = {
     "corporate installations",
     "Creative Design",
   ],
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
-    title: "Creative Design | Exhibition Stand Design & Spatial Environments",
-    description:
-      "Italian exhibition stand design and spatial branding studio. Trade show environments and experiential architecture across Europe.",
+    title: `${siteName} | Exhibition Stand Design & Spatial Environments`,
+    description: defaultSiteDescription,
     type: "website",
+    url: siteUrl,
+    siteName,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${siteName} | Exhibition Stand Design & Spatial Environments`,
+    description: defaultSiteDescription,
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
@@ -55,6 +74,7 @@ export default function RootLayout({
         className="min-h-screen bg-graphite text-text transition-colors duration-700"
         suppressHydrationWarning
       >
+        <StructuredData data={buildOrganizationJsonLd()} />
         <ThemeProvider>
           <LanguageProvider>{children}</LanguageProvider>
         </ThemeProvider>

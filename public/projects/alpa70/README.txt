@@ -1,6 +1,6 @@
-ALPA70 — drop media here
-=========================
+ALPA Salotti — drop media here
+================================
 
-  cover.jpg              → hero + portfolio card
-  gallery/01.jpg         → auto-discovered at build time
-  videos/walkthrough.mp4 → register in src/lib/projects.ts → videos[]
+  cover.jpeg             → hero + portfolio card
+  gallery/*.jpeg         → auto-discovered at build time
+  videos/*.mp4           → auto-discovered at build time (additional exhibition footage)

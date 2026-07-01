@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import {
   getProjectBySlug,
@@ -11,6 +12,9 @@ import {
 } from "@/lib/projects";
 import ProjectGallery from "./ProjectGallery";
 import ProjectVideos from "./ProjectVideos";
+import ProjectClosingCta from "./ProjectClosingCta";
+import MotionReveal from "@/components/motion/MotionReveal";
+import { useMountReveal } from "@/lib/motion";
 import styles from "./ProjectDetail.module.css";
 
 interface ProjectDetailProps {
@@ -27,6 +31,7 @@ export default function ProjectDetail({
   videoItems: videoItemsProp,
 }: ProjectDetailProps) {
   const { t, lang } = useLanguage();
+  const heroReveal = useMountReveal(0.12);
   const project = getProjectBySlug(slug, lang);
   const navigation = getProjectNavigation(slug);
 
@@ -75,7 +80,7 @@ export default function ProjectDetail({
         )}
 
         <div className={styles.heroContent}>
-          <div className={styles.heroInner}>
+          <motion.div className={styles.heroInner} {...heroReveal}>
             <div className={styles.heroMetaTop}>
               <span className={styles.heroCategory}>{project.categoryLabel}</span>
               {hasYear && <span className={styles.heroYear}>{project.year}</span>}
@@ -85,16 +90,19 @@ export default function ProjectDetail({
             {hasLocation && (
               <p className={styles.heroLocation}>{project.locationLabel}</p>
             )}
-          </div>
+          </motion.div>
         </div>
       </header>
 
       <div className={styles.body}>
-        <Link href="/#portfolio" className={styles.backLink}>
-          <span className={styles.backLinkLine} aria-hidden />
-          <span>{t("Torna al Portfolio", "Back to Portfolio")}</span>
-        </Link>
+        <MotionReveal>
+          <Link href="/#portfolio" className={styles.backLink}>
+            <span className={styles.backLinkLine} aria-hidden />
+            <span>{t("Torna al Portfolio", "Back to Portfolio")}</span>
+          </Link>
+        </MotionReveal>
 
+        <MotionReveal delay={0.08}>
         <dl
           className={styles.metaGrid}
           data-count={metaItems.length}
@@ -107,8 +115,10 @@ export default function ProjectDetail({
             </div>
           ))}
         </dl>
+        </MotionReveal>
 
         <div className={styles.content}>
+          <MotionReveal delay={0.1}>
           <section className={styles.section} aria-labelledby="project-overview">
             <div className={styles.sectionHeader}>
               <div className={styles.sectionRule} aria-hidden />
@@ -118,7 +128,9 @@ export default function ProjectDetail({
             </div>
             <p className={styles.prose}>{caseStudyLabels.overviewLabel}</p>
           </section>
+          </MotionReveal>
 
+          <MotionReveal delay={0.14}>
           <section className={styles.section} aria-labelledby="project-approach">
             <div className={styles.sectionHeader}>
               <div className={styles.sectionRule} aria-hidden />
@@ -128,7 +140,9 @@ export default function ProjectDetail({
             </div>
             <p className={styles.prose}>{caseStudyLabels.designApproachLabel}</p>
           </section>
+          </MotionReveal>
 
+          <MotionReveal delay={0.18}>
           <section className={styles.section} aria-labelledby="project-features">
             <div className={styles.sectionHeader}>
               <div className={styles.sectionRule} aria-hidden />
@@ -142,7 +156,9 @@ export default function ProjectDetail({
               ))}
             </ul>
           </section>
+          </MotionReveal>
 
+          <MotionReveal delay={0.22}>
           <section className={styles.section} aria-labelledby="project-deliverables">
             <div className={styles.sectionHeader}>
               <div className={styles.sectionRule} aria-hidden />
@@ -156,11 +172,14 @@ export default function ProjectDetail({
               ))}
             </ul>
           </section>
+          </MotionReveal>
         </div>
 
         {hasGallery && (
-          <section
+          <MotionReveal
+            as="section"
             className={`${styles.section} ${styles.gallerySection}`}
+            delay={0.1}
             aria-labelledby="project-gallery"
           >
             <div className={styles.galleryIntro}>
@@ -178,11 +197,11 @@ export default function ProjectDetail({
               </p>
             </div>
             <ProjectGallery items={galleryItems} projectTitle={project.title} />
-          </section>
+          </MotionReveal>
         )}
 
         {hasVideos && (
-          <section className={styles.section} aria-labelledby="project-videos">
+          <MotionReveal as="section" className={styles.section} delay={0.12} aria-labelledby="project-videos">
             <div className={styles.sectionHeader}>
               <div className={styles.sectionRule} aria-hidden />
               <h2 id="project-videos" className={styles.sectionEyebrow}>
@@ -190,17 +209,19 @@ export default function ProjectDetail({
               </h2>
             </div>
             <ProjectVideos items={videoItems} />
-          </section>
+          </MotionReveal>
         )}
 
-        <nav
+        <MotionReveal
+          as="nav"
           className={styles.projectNav}
+          delay={0.08}
           aria-label={t("Navigazione progetti", "Project navigation")}
         >
           {navigation.prev ? (
             <Link
               href={`/projects/${navigation.prev.slug}`}
-              className={styles.projectNavLink}
+              className={`${styles.projectNavLink} motion-card-lift`}
             >
               <span className={styles.projectNavLabel}>
                 {t("Progetto Precedente", "Previous Project")}
@@ -214,7 +235,7 @@ export default function ProjectDetail({
           {navigation.next ? (
             <Link
               href={`/projects/${navigation.next.slug}`}
-              className={`${styles.projectNavLink} ${styles.projectNavLinkNext}`}
+              className={`${styles.projectNavLink} ${styles.projectNavLinkNext} motion-card-lift`}
             >
               <span className={styles.projectNavLabel}>
                 {t("Progetto Successivo", "Next Project")}
@@ -224,7 +245,9 @@ export default function ProjectDetail({
           ) : (
             <span className={styles.projectNavPlaceholder} />
           )}
-        </nav>
+        </MotionReveal>
+
+        <ProjectClosingCta />
       </div>
     </article>
   );

@@ -1,5 +1,8 @@
 "use client";
 
+import type { CSSProperties, MouseEvent, ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import {
   SiInstagram,
   SiFacebook,
@@ -100,6 +103,129 @@ export const DOCK_SOCIAL_IDS: SocialBrandId[] = [
   "whatsapp",
 ];
 
+export const MOBILE_DOCK_SOCIAL_IDS: SocialBrandId[] = [
+  "instagram",
+  "facebook",
+  "email",
+  "phone",
+  "whatsapp",
+  "maps",
+];
+
+export function getSocialLinksByIds(ids: SocialBrandId[]): SocialLinkItem[] {
+  return ids
+    .map((id) => SOCIAL_LINKS.find((item) => item.id === id))
+    .filter((item): item is SocialLinkItem => Boolean(item));
+}
+
+interface PremiumSocialIconLinkProps {
+  item: SocialLinkItem;
+  ariaLabel: string;
+  onLinkClick?: () => void;
+  className?: string;
+  style?: CSSProperties;
+  mobileTapFeedback?: boolean;
+  children?: ReactNode;
+}
+
+const MOBILE_TAP_MS = 110;
+const MOBILE_TAP_EASE = [0.22, 1, 0.36, 1] as const;
+
+export function PremiumSocialIconLink({
+  item,
+  ariaLabel,
+  onLinkClick,
+  className = "",
+  style,
+  mobileTapFeedback = false,
+  children,
+}: PremiumSocialIconLinkProps) {
+  const Icon = item.icon;
+  const [pressing, setPressing] = useState(false);
+  const tapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (tapTimerRef.current) {
+        clearTimeout(tapTimerRef.current);
+      }
+    };
+  }, []);
+
+  const navigate = useCallback(() => {
+    onLinkClick?.();
+    if (item.external) {
+      window.open(item.href, "_blank", "noopener,noreferrer");
+      return;
+    }
+    window.location.assign(item.href);
+  }, [item.external, item.href, onLinkClick]);
+
+  const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (!mobileTapFeedback) {
+      onLinkClick?.();
+      return;
+    }
+
+    event.preventDefault();
+    if (pressing) return;
+
+    setPressing(true);
+    tapTimerRef.current = setTimeout(() => {
+      navigate();
+      setPressing(false);
+    }, MOBILE_TAP_MS);
+  };
+
+  const linkClassName = [
+    "premium-social__link",
+    className,
+    mobileTapFeedback && pressing ? "premium-dock-mobile__arc-link--pressing" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  if (mobileTapFeedback) {
+    return (
+      <motion.a
+        href={item.href}
+        role="listitem"
+        aria-label={ariaLabel}
+        data-brand={item.id}
+        {...(item.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+        className={linkClassName}
+        style={style}
+        onClick={handleClick}
+        animate={{ scale: pressing ? 0.9 : 1 }}
+        transition={{ duration: MOBILE_TAP_MS / 1000, ease: MOBILE_TAP_EASE }}
+      >
+        {children}
+        <span className="premium-social__ring" aria-hidden />
+        <span className="premium-social__glow" aria-hidden />
+        <Icon className="premium-social__icon" aria-hidden />
+      </motion.a>
+    );
+  }
+
+  return (
+    <a
+      href={item.href}
+      role="listitem"
+      aria-label={ariaLabel}
+      data-brand={item.id}
+      {...(item.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+      className={linkClassName}
+      style={style}
+      onClick={handleClick}
+    >
+      {children}
+      <span className="premium-social__ring" aria-hidden />
+      <span className="premium-social__glow" aria-hidden />
+      <Icon className="premium-social__icon" aria-hidden />
+    </a>
+  );
+}
+
 interface PremiumSocialIconsProps {
   ids?: SocialBrandId[];
   variant?: "dock";
@@ -108,6 +234,7 @@ interface PremiumSocialIconsProps {
   labelFor: (it: string, en: string) => string;
   ariaFor: (it: string, en: string) => string;
   className?: string;
+  onLinkClick?: () => void;
 }
 
 export default function PremiumSocialIcons({
@@ -118,12 +245,9 @@ export default function PremiumSocialIcons({
   labelFor,
   ariaFor,
   className = "",
+  onLinkClick,
 }: PremiumSocialIconsProps) {
-  const items = ids
-    ? ids
-        .map((id) => SOCIAL_LINKS.find((item) => item.id === id))
-        .filter((item): item is SocialLinkItem => Boolean(item))
-    : SOCIAL_LINKS;
+  const items = ids ? getSocialLinksByIds(ids) : SOCIAL_LINKS;
 
   return (
     <div
@@ -131,29 +255,17 @@ export default function PremiumSocialIcons({
       role="list"
     >
       {items.map((item) => {
-        const Icon = item.icon;
         const label = labelFor(item.labelIt, item.labelEn);
-        const aria = ariaFor(item.ariaIt, item.ariaEn);
 
         return (
-          <a
+          <PremiumSocialIconLink
             key={item.id}
-            href={item.href}
-            role="listitem"
-            aria-label={aria}
-            data-brand={item.id}
-            {...(item.external
-              ? { target: "_blank", rel: "noopener noreferrer" }
-              : {})}
-            className="premium-social__link"
+            item={item}
+            ariaLabel={ariaFor(item.ariaIt, item.ariaEn)}
+            onLinkClick={onLinkClick}
           >
-            {showLabels && (
-              <span className="premium-social__label">{label}</span>
-            )}
-            <span className="premium-social__ring" aria-hidden />
-            <span className="premium-social__glow" aria-hidden />
-            <Icon className="premium-social__icon" aria-hidden />
-          </a>
+            {showLabels ? <span className="premium-social__label">{label}</span> : null}
+          </PremiumSocialIconLink>
         );
       })}
     </div>

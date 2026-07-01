@@ -1,6 +1,11 @@
+"use client";
+
 import Link from "next/link";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function ProjectNotFound() {
+  const { t } = useLanguage();
+
   return (
     <div className="min-h-[60vh] flex flex-col items-center justify-center px-8 text-center">
       <p className="editorial-eyebrow mb-4">404</p>
@@ -13,13 +18,13 @@ export default function ProjectNotFound() {
           fontStyle: "italic",
         }}
       >
-        Project not found
+        {t("Progetto non trovato", "Project not found")}
       </h1>
       <Link
         href="/#portfolio"
         className="text-[10px] font-semibold tracking-[0.32em] uppercase text-text-dim hover:text-cyan transition-colors"
       >
-        Back to Portfolio
+        {t("Torna al Portfolio", "Back to Portfolio")}
       </Link>
     </div>
   );

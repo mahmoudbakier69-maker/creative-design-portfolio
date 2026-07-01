@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useInView } from "framer-motion";
+import { useLanguage } from "@/context/LanguageContext";
 import type { ResolvedGalleryImage } from "@/lib/projects";
 import styles from "./ProjectGallery.module.css";
 
@@ -69,6 +70,7 @@ function GalleryThumbnail({ item, index, total, projectTitle, onOpen }: GalleryT
 }
 
 export default function ProjectGallery({ items, projectTitle }: ProjectGalleryProps) {
+  const { t } = useLanguage();
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   const closeLightbox = useCallback(() => setActiveIndex(null), []);
@@ -149,7 +151,7 @@ export default function ProjectGallery({ items, projectTitle }: ProjectGalleryPr
                 type="button"
                 className={styles.lightboxClose}
                 onClick={closeLightbox}
-                aria-label="Close"
+                aria-label={t("Chiudi", "Close")}
               >
                 ×
               </button>
@@ -160,7 +162,7 @@ export default function ProjectGallery({ items, projectTitle }: ProjectGalleryPr
                     type="button"
                     className={`${styles.lightboxNav} ${styles.lightboxNavPrev}`}
                     onClick={showPrev}
-                    aria-label="Previous image"
+                    aria-label={t("Immagine precedente", "Previous image")}
                   >
                     ‹
                   </button>
@@ -168,7 +170,7 @@ export default function ProjectGallery({ items, projectTitle }: ProjectGalleryPr
                     type="button"
                     className={`${styles.lightboxNav} ${styles.lightboxNavNext}`}
                     onClick={showNext}
-                    aria-label="Next image"
+                    aria-label={t("Immagine successiva", "Next image")}
                   >
                     ›
                   </button>
